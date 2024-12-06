@@ -1,5 +1,5 @@
 import "./index.scss";
-import bsQD from "@/assets/img/bs-quocdung.png";
+import bsQD from "@/assets/img/bs-QuocDung.png";
 import bsNL from "@/assets/img/bs-NgocLan.png";
 import bsTN from "@/assets/img/bs-ThiNgoc.png";
 import { Button } from "antd";
