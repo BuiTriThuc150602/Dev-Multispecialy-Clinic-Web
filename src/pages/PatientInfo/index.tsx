@@ -1,6 +1,6 @@
 import { userValue } from "@/stores/user";
 import { Button, DatePicker, Form, Input, Radio, Select } from "antd";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { useAddress } from "@/hooks/useAddress";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -137,7 +137,6 @@ export const PatientInfo = () => {
   };
 
   console.log("user", user);
-  
 
   return (
     <div className="flex justify-center">

@@ -1,6 +1,5 @@
 import Special1 from "@/assets/img/special1.png";
 import Special2 from "@/assets/img/special2.png";
-import Special3 from "@/assets/img/special3.png";
 import Special4 from "@/assets/img/special4.png";
 import Special5 from "@/assets/img/special5.png";
 import SpacialDaLieu from "@/assets/img/special-da-lieu.jpg";

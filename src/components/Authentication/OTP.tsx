@@ -4,7 +4,6 @@ import { useRecoilValue } from "recoil";
 import { formValue } from "./stores";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { ConfirmationResult, getAuth, RecaptchaVerifier } from "firebase/auth";
-import { FirebaseService } from "@/services/Firebase.service";
 import toast from "react-hot-toast";
 import { AuthenService } from "@/services/Authen/AuthenService";
 import { useNavigate } from "react-router-dom";
@@ -28,11 +27,11 @@ export const OTP = () => {
   const form = useRecoilValue(formValue);
   console.log("form", form);
 
-  const [recaptchaVerifier, setRecaptchaVerifier] =
+  const [_recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier | null>(null);
-  const [confirmationResult, setConfirmationResult] =
+  const [confirmationResult, _setConfirmationResult] =
     useState<ConfirmationResult>();
-  const [isPeding, setIsPending] = useState<boolean>(false);
+  const [isPeding, _setIsPending] = useState<boolean>(false);
 
   useEffect(() => {
     const recaptchaVerifier = new RecaptchaVerifier(
