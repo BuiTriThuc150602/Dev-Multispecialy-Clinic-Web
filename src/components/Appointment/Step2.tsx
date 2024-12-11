@@ -29,13 +29,16 @@ export const Step2 = ({ form }: { form: any }) => {
     fetchAddressData();
   }, []);
 
-  const handleSelectCity = async (value: string, option: any) => {    
+  const handleSelectCity = async (value: string, option: any) => {
     const data = await fetchDistrictData(value);
     if (data) {
       setDistricts(data);
       setFormValues((prev) => ({
         ...prev,
-        address: { ...prev?.address, city: option.label },
+        patient: {
+          ...prev?.patient,
+          address: { ...prev, city: option.label },
+        },
       }));
       form.setFieldsValue({ district: undefined });
     }
@@ -44,7 +47,10 @@ export const Step2 = ({ form }: { form: any }) => {
   const handleDistrictChange = (value: string, option: any) => {
     setFormValues((prev) => ({
       ...prev,
-      address: { ...prev?.address, state: option.label },
+      patient: {
+        ...prev?.patient,
+        address: { ...prev, state: option.label },
+      },
     }));
     form.setFieldsValue({ district: value });
   };
@@ -55,7 +61,7 @@ export const Step2 = ({ form }: { form: any }) => {
   ) => {
     setFormValues((prev) => ({
       ...prev,
-      dob: formatDate(dateString as string),
+      patient: { ...prev?.patient, dob: formatDate(dateString as string) },
     }));
   };
   const handleSubmit = async () => {
@@ -72,34 +78,61 @@ export const Step2 = ({ form }: { form: any }) => {
 
   return (
     <>
+      <div className={gridClasses}>
+
       <Form.Item
         label="Họ và tên"
         name="name"
         required
-        initialValue={formValues?.fullName}
+        initialValue={formValues?.patient?.fullName}
         rules={[{ required: true, message: "Họ và tên không được để trống" }]}
       >
         <Input
           placeholder="Nhập họ và tên"
-          value={formValues?.fullName}
+          value={formValues?.patient?.fullName}
           onChange={(e) => {
-            setFormValues((prev) => ({ ...prev, fullName: e.target.value }));
+            setFormValues((prev) => ({
+              ...prev,
+              patient: { ...prev?.patient, fullName: e.target.value },
+            }));
           }}
         />
       </Form.Item>
+      <Form.Item
+        label="Email"
+        name="email"
+        required
+        initialValue={formValues?.patient?.email}
+        // rules={[{ required: true, message: "Họ và tên không được để trống" }]}
+      >
+        <Input
+          placeholder="Nhập email"
+          value={formValues?.patient?.email}
+          onChange={(e) => {
+            setFormValues((prev) => ({
+              ...prev,
+              patient: { ...prev?.patient, email: e.target.value },
+            }));
+          }}
+        />
+      </Form.Item>
+      </div>
       <div className={gridClasses}>
         <Form.Item
           label="Giới tính"
           name="gender"
           required
           layout="vertical"
-          initialValue={formValues?.gender}
+          initialValue={formValues?.patient?.gender}
           rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
         >
           <Radio.Group
-            value={formValues?.gender}
+            value={!formValues?.patient?.gender}
             onChange={(e) => {
-              setFormValues((prev) => ({ ...prev, gender: e.target.value }));
+              setFormValues((prev) => ({
+                ...prev,
+                patient: { ...prev?.patient, gender: e.target.value },
+              }));
             }}
           >
             <Radio value={true}>Nữ</Radio>
@@ -110,7 +143,9 @@ export const Step2 = ({ form }: { form: any }) => {
           label="Ngày sinh"
           name="date"
           required
-          initialValue={formValues?.dob && dayjs(formValues.dob)}
+          initialValue={
+            formValues?.patient?.dob && dayjs(formValues.patient?.dob)
+          }
         >
           <DatePicker
             format={"DD/MM/YYYY"}
@@ -125,14 +160,14 @@ export const Step2 = ({ form }: { form: any }) => {
           label="Tỉnh/Thành phố"
           name="city"
           required
-          initialValue={formValues?.address?.city}
+          initialValue={formValues?.patient?.address?.city}
         >
           <Select
             showSearch
             placeholder="Chọn tỉnh/thành phố"
             optionFilterProp="label"
             options={citys}
-            value={formValues?.address?.city}
+            value={formValues?.patient?.address?.city}
             onChange={handleSelectCity}
           ></Select>
         </Form.Item>
@@ -140,14 +175,14 @@ export const Step2 = ({ form }: { form: any }) => {
           label="Quận/Huyện"
           name="district"
           required
-          initialValue={formValues?.address?.state}
+          initialValue={formValues?.patient?.address?.state}
         >
           <Select
             showSearch
             placeholder="Chọn quận/huyện"
             optionFilterProp="label"
             options={districts}
-            value={formValues?.address?.state}
+            value={formValues?.patient?.address?.state}
             onChange={handleDistrictChange}
             notFoundContent="Không tìm thấy quận/huyện"
             allowClear
@@ -158,16 +193,16 @@ export const Step2 = ({ form }: { form: any }) => {
         label="Địa chỉ"
         name="address"
         required
-        initialValue={formValues?.address?.address}
+        initialValue={formValues?.patient?.address?.address}
         rules={[{ required: true, message: "Địa chỉ không được để trống" }]}
       >
         <Input
           placeholder="Nhập địa chỉ"
-          value={formValues?.address?.address}
+          value={formValues?.patient?.address?.address}
           onChange={(e) => {
             setFormValues((prev) => ({
               ...prev,
-              address: { ...prev?.address, address: e.target.value },
+              address: { ...prev?.patient?.address, address: e.target.value },
             }));
           }}
         />
@@ -182,10 +217,10 @@ export const Step2 = ({ form }: { form: any }) => {
           onClick={handleSubmit}
           loading={isLoading === loadingType.Appointment}
           disabled={
-            !formValues?.fullName ||
-            !formValues.dob ||
-            formValues.gender === null ||
-            !formValues.address
+            !formValues?.patient?.fullName ||
+            !formValues.patient?.dob ||
+            formValues.patient?.gender === null ||
+            !formValues.patient?.address
           }
         >
           Đặt lịch

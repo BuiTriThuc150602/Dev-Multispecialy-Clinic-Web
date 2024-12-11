@@ -10,25 +10,7 @@ export const AppointmentService = () => {
   };
   const appointment = async (formValues: any) => {
     const response = await useApiRequest({
-      apiCall: axiosInstance.post("appointment", {
-        service: formValues.service,
-        doctor: formValues.doctor,
-        date: formValues.date,
-        time: formValues.time,
-        symptoms: formValues.symptoms,
-        patient: {
-          fullName: formValues.fullName,
-          phone: formValues.phone,
-          email: formValues.email,
-          address: {
-            city: formValues.address.city,
-            state: formValues.address.state,
-            address: formValues.address.address,
-          },
-          gender: formValues.gender,
-          dob: formValues.dob,
-        },
-      }),
+      apiCall: axiosInstance.post("appointment", formValues),
       loadingType: loadingType.Appointment,
       setIsLoading,
     });

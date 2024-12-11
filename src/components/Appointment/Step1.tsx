@@ -8,11 +8,12 @@ import {
   TimePicker,
   TimePickerProps,
   AutoComplete,
+  Input,
 } from "antd";
 import { DatePickerProps, RangePickerProps } from "antd/es/date-picker";
 import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { formValuesState, stepState } from "./stores";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
@@ -20,6 +21,8 @@ import { useGetPatientByPhone } from "@/components/Appointment/hooks/useGetPatie
 import { Service } from "@/components/Appointment/type";
 import { useGetSpecializations } from "@/hooks/Doctor/useGetSpecializations";
 import { useGetDoctorBySpecialization } from "@/hooks/Doctor/useGetDoctorBySpecialization";
+import { userValue } from "@/stores/user";
+import { AppointmentService } from "@/services/Appointment/AppointmentService";
 
 export const Step1 = ({ form }: { form: any }) => {
   const setStep = useSetRecoilState(stepState);
@@ -30,6 +33,17 @@ export const Step1 = ({ form }: { form: any }) => {
   const { specializations } = useGetSpecializations();
   const { doctor, fetchDoctorBySpecialization } =
     useGetDoctorBySpecialization();
+  const user = useRecoilValue(userValue);
+  const { appointment } = AppointmentService();
+
+  useEffect(() => {
+    if (user && user.patientId) {
+      setFormValues((prev) => ({
+        ...prev,
+        patient: user,
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (phone?.length > 9) {
@@ -93,26 +107,35 @@ export const Step1 = ({ form }: { form: any }) => {
   const onSelect = (_data: string, option: any) => {
     setFormValues((prev) => ({
       ...prev,
-      phone: option.phone,
-      fullName: option.fullName,
-      gender: option.gender,
-      dob: option.dob,
-      address: option.address,
+      patient: {
+        phone: option.phone,
+        fullName: option.fullName,
+        gender: option.gender,
+        dob: option.dob,
+        address: option.address,
+      },
     }));
   };
 
-  const handleSubmit = () => {
-    if (!formValues?.phone) {
-      setFormValues((prev) => ({
-        ...prev,
-        phone: phone,
-      }));
+  const handleSubmit = async () => {
+    if (user && user.patientId) {
+      await appointment(formValues);
+    } else {
+      if (!formValues?.patient?.phone) {
+        setFormValues((prev) => ({
+          ...prev,
+          patient: {
+            phone: phone,
+          },
+        }));
+      }
+      setStep(2);
     }
-    setStep(2);
   };
 
   const gridClasses =
     "flex flex-col lg:grid lg:grid-cols-2 lg:items-center lg:gap-5";
+  console.log("formValues", formValues);
 
   return (
     <>
@@ -147,17 +170,21 @@ export const Step1 = ({ form }: { form: any }) => {
             },
           ]}
         >
-          <AutoComplete
-            options={patients}
-            onSelect={onSelect}
-            onSearch={(text) => {
-              if (text.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)) {
-                setFormValues((prev) => ({ ...prev, phone: text }));
-                setPhone(text);
-              }
-            }}
-            placeholder="Nhập số điện thoại"
-          />
+          {user && user.patientId ? (
+            <Input placeholder={user.phone} disabled />
+          ) : (
+            <AutoComplete
+              options={patients}
+              onSelect={onSelect}
+              onSearch={(text) => {
+                if (text.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)) {
+                  setFormValues((prev) => ({ ...prev, phone: text }));
+                  setPhone(text);
+                }
+              }}
+              placeholder="Nhập số điện thoại"
+            />
+          )}
         </Form.Item>
       </div>
 
@@ -226,7 +253,7 @@ export const Step1 = ({ form }: { form: any }) => {
           className="w-full"
           disabled={
             !formValues?.service ||
-            !formValues.phone ||
+            !formValues?.patient?.phone ||
             !formValues.doctor ||
             !formValues.date ||
             !formValues.time ||
@@ -234,7 +261,7 @@ export const Step1 = ({ form }: { form: any }) => {
           }
           onClick={handleSubmit}
         >
-          Tiếp tục
+          {user?.patientId ? "Đặt lịch" : "Tiếp tục"}
         </Button>
       </div>
     </>
