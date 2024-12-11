@@ -13,7 +13,12 @@ import {
 import { DatePickerProps, RangePickerProps } from "antd/es/date-picker";
 import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from "recoil";
 import { formValuesState, stepState } from "./stores";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
@@ -23,6 +28,7 @@ import { useGetSpecializations } from "@/hooks/Doctor/useGetSpecializations";
 import { useGetDoctorBySpecialization } from "@/hooks/Doctor/useGetDoctorBySpecialization";
 import { userValue } from "@/stores/user";
 import { AppointmentService } from "@/services/Appointment/AppointmentService";
+import { useNavigate } from "react-router-dom";
 
 export const Step1 = ({ form }: { form: any }) => {
   const setStep = useSetRecoilState(stepState);
@@ -31,6 +37,8 @@ export const Step1 = ({ form }: { form: any }) => {
   const [phone, setPhone] = useState<string>("");
   const { patients, handleGetPhone } = useGetPatientByPhone();
   const { specializations } = useGetSpecializations();
+  const clearFormValue = useResetRecoilState(formValuesState);
+  const navigate = useNavigate();
   const { doctor, fetchDoctorBySpecialization } =
     useGetDoctorBySpecialization();
   const user = useRecoilValue(userValue);
@@ -120,6 +128,9 @@ export const Step1 = ({ form }: { form: any }) => {
   const handleSubmit = async () => {
     if (user && user.patientId) {
       await appointment(formValues);
+      clearFormValue();
+      setStep(1);
+      navigate("/");
     } else {
       if (!formValues?.patient?.phone) {
         setFormValues((prev) => ({

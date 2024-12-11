@@ -172,8 +172,8 @@ export const PatientInfo = () => {
             </Form.Item>
             <Form.Item label="Giới tính" name="gender">
               <Radio.Group>
-                <Radio value={true}>Nữ</Radio>
-                <Radio value={false}>Nam</Radio>
+                <Radio value={false}>Nữ</Radio>
+                <Radio value={true}>Nam</Radio>
               </Radio.Group>
             </Form.Item>
             <Form.Item

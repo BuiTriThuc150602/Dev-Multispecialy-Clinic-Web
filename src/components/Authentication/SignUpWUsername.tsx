@@ -40,7 +40,7 @@ export const SignUpWUsername = ({
           key: patient.patientId,
           value: patient.patientId,
           label: `${patient.patientId} - ${patient.fullName} - ${
-            patient.gender ? "Nữ" : "Nam"
+            patient.gender ? "Nam" : "Nữ"
           } - ${formatDobFromServer(patient.dob)} - ${patient.address.city}`,
         };
       });
