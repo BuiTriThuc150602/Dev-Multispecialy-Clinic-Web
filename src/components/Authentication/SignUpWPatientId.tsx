@@ -101,9 +101,9 @@ export const SignUpWPatientId = ({
               label="Giới tính"
               required
               layout="horizontal"
-              initialValue={form?.patient?.gender}
+              initialValue={!form?.patient?.gender}
             >
-              <Radio.Group value={form?.patient?.gender}>
+              <Radio.Group value={!form?.patient?.gender}>
                 <Radio value={true}>Nữ</Radio>
                 <Radio value={false}>Nam</Radio>
               </Radio.Group>

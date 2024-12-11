@@ -40,7 +40,7 @@ export const SignUpWUsername = ({
           key: patient.patientId,
           value: patient.patientId,
           label: `${patient.patientId} - ${patient.fullName} - ${
-            patient.gender ? "Nam" : "Nữ"
+            patient.gender ? "Nữ" : "Nam"
           } - ${formatDobFromServer(patient.dob)} - ${patient.address.city}`,
         };
       });
@@ -183,9 +183,9 @@ export const SignUpWUsername = ({
               label="Giới tính"
               required
               layout="horizontal"
-              initialValue={form?.patient?.gender}
+              initialValue={!form?.patient?.gender}
             >
-              <Radio.Group value={form?.patient?.gender} disabled={true}>
+              <Radio.Group value={!form?.patient?.gender} disabled={true}>
                 <Radio value={true}>Nữ</Radio>
                 <Radio value={false}>Nam</Radio>
               </Radio.Group>
