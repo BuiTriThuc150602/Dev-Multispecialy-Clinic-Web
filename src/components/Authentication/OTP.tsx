@@ -7,6 +7,7 @@ import { ConfirmationResult, getAuth, RecaptchaVerifier } from "firebase/auth";
 import toast from "react-hot-toast";
 import { AuthenService } from "@/services/Authen/AuthenService";
 import { useNavigate } from "react-router-dom";
+import { FirebaseService } from "@/services/Firebase.service";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -25,13 +26,12 @@ export const OTP = () => {
   const { isLoading, typeLoading, signUp } = AuthenService();
   const navigate = useNavigate();
   const form = useRecoilValue(formValue);
-  console.log("form", form);
 
-  const [_recaptchaVerifier, setRecaptchaVerifier] =
+  const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier | null>(null);
-  const [confirmationResult, _setConfirmationResult] =
+  const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult>();
-  const [isPeding, _setIsPending] = useState<boolean>(false);
+  const [isPeding, setIsPending] = useState<boolean>(false);
 
   useEffect(() => {
     const recaptchaVerifier = new RecaptchaVerifier(
@@ -48,39 +48,39 @@ export const OTP = () => {
   }, [auth]);
 
   const handleSubmit = async () => {
-    // if (!confirmationResult && form?.patient?.phone) {
-    //   try {
-    //     setIsPending(true);
-    //     const sendOTP = await FirebaseService.getInstance().sendOTP(
-    //       form?.patient?.phone,
-    //       recaptchaVerifier
-    //     );
-    //     setConfirmationResult(sendOTP);
-    //     setIsPending(false);
-    //     toast.success("Mã OTP đã được gửi");
-    //   } catch (error: any) {
-    //     toast.error(error.message);
-    //     setIsPending(false);
-    //   }
-    // } else {
-    //   try {
-    //     setIsPending(true);
-    //     if (confirmationResult) {
-    //       const verify = await FirebaseService.getInstance().confirmOTP(
-    //         confirmationResult,
-    //         otp
-    //       );
-    //       console.log("verify", verify);
-    //       setIsPending(false);
-    //       toast.success("Xác thực thành công");
-    //       setOtp("");
+    if (!confirmationResult && form?.patient?.phone) {
+      try {
+        setIsPending(true);
+        const sendOTP = await FirebaseService.getInstance().sendOTP(
+          form?.patient?.phone,
+          recaptchaVerifier
+        );
+        setConfirmationResult(sendOTP);
+        setIsPending(false);
+        toast.success("Mã OTP đã được gửi");
+      } catch (error: any) {
+        toast.error(error.message);
+        setIsPending(false);
+      }
+    } else {
+      try {
+        setIsPending(true);
+        if (confirmationResult) {
+          const verify = await FirebaseService.getInstance().confirmOTP(
+            confirmationResult,
+            otp
+          );
+          console.log("verify", verify);
+          setIsPending(false);
+          toast.success("Xác thực thành công");
+          setOtp("");
           handleSignUp();
-    //     }
-    //   } catch (error: any) {
-    //     toast.error(error.message);
-    //     setIsPending(false);
-    //   }
-    // }
+        }
+      } catch (error: any) {
+        toast.error(error.message);
+        setIsPending(false);
+      }
+    }
   };
 
   useEffect(() => {
