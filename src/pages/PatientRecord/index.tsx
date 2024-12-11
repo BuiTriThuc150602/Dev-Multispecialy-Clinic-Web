@@ -7,8 +7,9 @@ import { useRecoilValue } from "recoil";
 import {
   Entry,
   PatientRecordProps,
-} from "@/components/PatientRecord/store/type";
+} from "@/components/PatientRecord/stores/type";
 import { DatePicker, Pagination } from "antd";
+import { endOfDay, isWithinInterval, parseISO, startOfDay } from "date-fns";
 
 export const PatientRecord = () => {
   const user = useRecoilValue(userValue);
@@ -16,6 +17,7 @@ export const PatientRecord = () => {
   const [patientRecord, setPatientRecord] = useState<PatientRecordProps>();
   const [dateRange, setDateRange] = useState<string[]>();
   const [recordFilter, setRecordFilter] = useState<Entry[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const fetchMedicalRecord = async () => {
     if (user?.patientId) {
@@ -33,17 +35,30 @@ export const PatientRecord = () => {
 
   useEffect(() => {
     if (dateRange && dateRange[0] !== "" && dateRange[1] !== "") {
+      const startDate = startOfDay(new Date(dateRange[0]));
+      const endDate = endOfDay(new Date(dateRange[1]));
       const filteredEntries = patientRecord?.entries.filter((entry) => {
-        return (
-          new Date(entry.visitDate) >= new Date(dateRange[0]) &&
-          new Date(entry.visitDate) <= new Date(dateRange[1])
-        );
+        const visitDate = parseISO(entry.visitDate);
+        return isWithinInterval(visitDate, { start: startDate, end: endDate });
       });
       setRecordFilter(filteredEntries || []);
     } else {
       setRecordFilter(patientRecord?.entries || []);
     }
+    setCurrentPage(1);
   }, [dateRange]);
+
+  useEffect(() => {
+    if (patientRecord?.entries && currentPage > 0) {
+      const recordIndex = currentPage - 1;
+      if (recordIndex < patientRecord.entries.length) {
+        const selectedEntry = patientRecord.entries[recordIndex];
+        setRecordFilter([selectedEntry]);
+      } else {
+        setRecordFilter([]);
+      }
+    }
+  }, [currentPage, patientRecord]);
 
   return (
     <div className="p-6 bg-white rounded-lg">
@@ -100,9 +115,15 @@ export const PatientRecord = () => {
               <div>
                 <Pagination
                   defaultCurrent={1}
-                  total={recordFilter.length}
-                  pageSize={5}
+                  total={
+                    dateRange && dateRange[0] !== ""
+                      ? recordFilter.length
+                      : patientRecord?.entries.length
+                  }
+                  pageSize={1}
                   showSizeChanger={false}
+                  onChange={(page) => setCurrentPage(page)}
+                  current={currentPage}
                 />
               </div>
             </div>

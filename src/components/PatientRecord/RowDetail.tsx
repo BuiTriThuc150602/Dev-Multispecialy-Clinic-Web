@@ -1,4 +1,4 @@
-import { IRowDetail } from "./store/type";
+import { IRowDetail } from "./stores/type";
 
 export const RowDetail: React.FC<IRowDetail> = ({ name, value }) => (
   <div>

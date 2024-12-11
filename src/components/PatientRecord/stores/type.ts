@@ -6,16 +6,17 @@ export interface Address {
 
 export interface LabDetail {
   name: string;
-  unit: string;
-  range: string;
-  value: number;
-  status: string;
   description?: string;
   notes?: string;
   recommendations?: string;
+  status?: string;
+  range?: string;
+  unit?: string;
+  value?: number;
 }
 
 export interface LabTest {
+  id: number;
   labTest: {
     name: string;
     price: number;
@@ -39,6 +40,28 @@ export interface Doctor {
   dob: string;
 }
 
+export interface Medication {
+  id: number;
+  description: string;
+  dosage: string;
+  image: string;
+  name: string;
+  unitPrice: number;
+  unitStock: string;
+  usage: string;
+}
+
+export interface Medications {
+  id: number;
+  medication: Medication[];
+  note: string;
+  quantity: number;
+}
+export interface Prescription {
+  id: number;
+  medications: Medications[];
+  note: string;
+}
 export interface Entry {
   id: number;
   symptoms: string;
@@ -49,6 +72,7 @@ export interface Entry {
   medicalInformation: string | null;
   note: string;
   labRequests: LabTest[];
+  prescriptions: Prescription[];
 }
 
 export interface Patient {
@@ -66,7 +90,6 @@ export interface PatientRecordProps {
   id: number;
   patient: Patient;
   notes: string;
-
   entries: Entry[];
 }
 
