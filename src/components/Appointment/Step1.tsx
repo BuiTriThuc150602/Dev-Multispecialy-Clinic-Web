@@ -36,7 +36,9 @@ export const Step1 = () => {
     useGetDoctorBySpecialization();
   const user = useRecoilValue(userValue);
   const { appointment } = AppointmentService();
-  const disableInHours = [0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23];
+  const [disableInHours, setDisableInHours] = useState([
+    0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23,
+  ]);
   const disbaleOutHours = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23,
   ];
@@ -49,7 +51,6 @@ export const Step1 = () => {
         (appointment) => appointment.isCancel === true
       );
       setIsAppointment(!isCancel);
-      console.log("isCancel", isCancel);
     }
   }, [appointments]);
 
@@ -69,9 +70,9 @@ export const Step1 = () => {
   }, [form?.doctor?.specialization]);
 
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
-    const today = dayjs().endOf("day");
-    const maxDate = dayjs().add(15, "day").endOf("day");
-    return current < today || current > maxDate;
+    const today = dayjs().startOf("day");
+    const maxDate = dayjs().add(14, "day").endOf("day");
+    return current && (current < today || current > maxDate);
   };
 
   const handleSelectSpecialty = (value: string) => {
@@ -105,6 +106,22 @@ export const Step1 = () => {
       setForm((prev) => ({ ...prev, date: "" }));
       return;
     }
+
+    const selectedDate = dayjs(dateString as string, "DD/MM/YYYY");
+
+    if (selectedDate.isSame(dayjs(), "day")) {
+      formAntd.setFieldsValue({ time: undefined });
+      let currentHour = dayjs().hour() + 10 + 1;
+      const currentMinute = dayjs().minute() + 23;
+      if (currentMinute > 45) {
+        currentHour++;
+      }
+      const hoursToDisable = Array.from({ length: currentHour }, (_, i) => i);
+      setDisableInHours((prev) => [...new Set([...prev, ...hoursToDisable])]);
+    } else {
+      setDisableInHours([0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23]);
+    }
+
     setForm((prev) => ({
       ...prev,
       date: formatDate(dateString as string),
@@ -119,6 +136,7 @@ export const Step1 = () => {
       setForm((prev) => ({ ...prev, time: "" }));
       return;
     }
+
     setForm((prev) => ({ ...prev, time: timeString as string }));
   };
 
@@ -200,14 +218,14 @@ export const Step1 = () => {
                 options={doctors}
                 onChange={handleSelectDoctor}
                 notFoundContent={
-                  <Empty description="Vui lòng chọn chuyên khoa và ngày giờ trước" />
+                  <Empty description="Vui lòng chọn chuyên khoa trước" />
                 }
               />
             </Form.Item>
           </div>
 
           <div className={gridClasses}>
-            <Form.Item label="Chọn ngày muốn khám" required>
+            <Form.Item label="Chọn ngày muốn khám" required name={"date"}>
               <DatePicker
                 format={"DD/MM/YYYY"}
                 disabledDate={disabledDate}
