@@ -1,7 +1,5 @@
 import { Button, Input } from "antd";
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { formValue } from "./stores";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { ConfirmationResult, getAuth, RecaptchaVerifier } from "firebase/auth";
 import toast from "react-hot-toast";
@@ -9,6 +7,14 @@ import { AuthenService } from "@/services/Authen/AuthenService";
 import { useNavigate } from "react-router-dom";
 import { FirebaseService } from "@/services/Firebase.service";
 import { useAuthContext } from "@/context/AuthContext";
+import { OTPProps, OTPScreen } from "@/types/OTP";
+import { IFormForgotPassword, IFormValue } from "@/types/Authentication";
+import { Patient } from "@/types/User";
+import { PatientService } from "@/services/Patient/PatientService";
+import { useSetRecoilState } from "recoil";
+import { isScreenPatientInfoValue } from "@/stores/patientInfo";
+import { isScreenAuthenValue } from "../Authentication/stores";
+import { screenKey } from "../Authentication/stores/screenKey";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -21,20 +27,35 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 
-export const OTP = () => {
+export const OTP: React.FC<OTPProps> = ({ screen, form }) => {
+  const [phone, setPhone] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(30);
   const [otp, setOtp] = useState<string>("");
-  const { isLoading, typeLoading, signUp, signIn } = AuthenService();
+  const { isLoading, typeLoading, signUp, signIn, forgotPassword } =
+    AuthenService();
+  const { updateInfo } = PatientService();
   const navigate = useNavigate();
-  const form = useRecoilValue(formValue);
   const [isPeding, setIsPending] = useState<boolean>(false);
-  console.log("form in OTP", form);
-
+  const setIsScreenPatientInfo = useSetRecoilState(isScreenPatientInfoValue);
+  const setIsScreenAuthen = useSetRecoilState(isScreenAuthenValue);
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier | null>(null);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult>();
   const { setAccessToken } = useAuthContext();
+
+  useEffect(() => {
+    if (screen === OTPScreen.Authen) {
+      const typedForm = form as IFormValue;
+      setPhone(typedForm.patient?.phone || "");
+    } else if (screen === OTPScreen.UpdateInfo) {
+      const typedForm = form as Patient;
+      setPhone(typedForm.phone || "");
+    } else if (screen === OTPScreen.ForgotPassword) {
+      const typedForm = form as IFormForgotPassword;
+      setPhone(typedForm.phone || "");
+    }
+  }, [screen, form]);
 
   useEffect(() => {
     const recaptchaVerifier = new RecaptchaVerifier(
@@ -51,11 +72,11 @@ export const OTP = () => {
   }, [auth]);
 
   const handleSubmit = async () => {
-    if (!confirmationResult && form?.patient?.phone) {
+    if (!confirmationResult && phone) {
       try {
         setIsPending(true);
         const sendOTP = await FirebaseService.getInstance().sendOTP(
-          form?.patient?.phone!,
+          phone,
           recaptchaVerifier
         );
         setTimeLeft(30);
@@ -78,7 +99,13 @@ export const OTP = () => {
           setIsPending(false);
           toast.success("Xác thực thành công");
           setOtp("");
-          handleSignUp();
+          if (screen === OTPScreen.Authen) {
+            handleSignUp();
+          } else if (screen === OTPScreen.UpdateInfo) {
+            handleUpdateInfo();
+          } else if (screen === OTPScreen.ForgotPassword) {
+            handleResetPassword();
+          }
         }
       } catch (error: any) {
         toast.error(error.message);
@@ -98,47 +125,34 @@ export const OTP = () => {
   }, [timeLeft]);
 
   const handleResendOtp = async () => {
-    if (recaptchaVerifier) {
-      console.log("Clear recaptchaVerifier");
-      
-      recaptchaVerifier.clear();
-      setRecaptchaVerifier(null);
-    }
-
-    const newRecaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
+    setTimeLeft(30);
+    if (!confirmationResult && phone) {
+      try {
+        setIsPending(true);
+        const sendOTP = await FirebaseService.getInstance().sendOTP(
+          phone,
+          recaptchaVerifier
+        );
+        setConfirmationResult(sendOTP);
+        setIsPending(false);
+        toast.success("Mã OTP đã được gửi");
+      } catch (error: any) {
+        toast.error(error.message);
+        setIsPending(false);
       }
-    );
-    setRecaptchaVerifier(newRecaptchaVerifier);
-
-    try {
-      setIsPending(true);
-      const sendOTP = await FirebaseService.getInstance().sendOTP(
-        form?.patient?.phone!,
-        newRecaptchaVerifier
-      );
-      setConfirmationResult(sendOTP);
-      setIsPending(false);
-      setTimeLeft(30); // Reset timer
-      toast.success("Mã OTP đã được gửi");
-    } catch (error: any) {
-      toast.error(error.message);
-      setIsPending(false);
     }
   };
 
   const handleSignUp = () => {
-    signUp(form).then((response) => {
+    const typedForm = form as IFormValue;
+    signUp(typedForm).then((response) => {
       if (!response?.status) {
         toast.error(response?.data?.message);
       } else {
         toast.success(response.data.message);
         signIn({
-          username: form?.username,
-          password: form?.password,
+          username: typedForm?.username,
+          password: typedForm?.password,
         }).then((response) => {
           if (!response?.status) {
             console.log("response handleSignIn", response);
@@ -147,6 +161,28 @@ export const OTP = () => {
             navigate("/");
           }
         });
+      }
+    });
+  };
+
+  const handleUpdateInfo = async () => {
+    const values = form as Patient;
+    console.log("values in handleUpdateInfo", values);
+    if (values.patientId) {
+      await updateInfo(values.patientId, values);
+      setIsScreenPatientInfo(true);
+    }
+  };
+
+  const handleResetPassword = () => {
+    const typedForm = form as IFormForgotPassword;
+    const { username, password } = typedForm;
+    forgotPassword({ username, password }).then((response) => {
+      if (!response?.status) {
+        toast.error(response?.data?.message);
+      } else {
+        toast.success(response.data.message);
+        setIsScreenAuthen(screenKey.signIn);
       }
     });
   };
@@ -162,12 +198,12 @@ export const OTP = () => {
             <div className="text-sm text-gray2">
               Mã OTP đã được gửi đến số điện thoại
               <span className="ml-1 font-semibold">
-                *******{form?.patient?.phone?.slice(-3)}
+                *******{phone?.slice(-3)}
               </span>
             </div>
             <div>Vui lòng nhập mã OTP</div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 w-full">
             <Input.OTP
               length={6}
               value={otp}
@@ -177,19 +213,13 @@ export const OTP = () => {
               {timeLeft === 0 ? (
                 <div
                   className="text-sm font-semibold text-blue2 cursor-pointer"
-                  onClick={() => {
-                    setConfirmationResult(undefined);
-                    setRecaptchaVerifier(null);
-                    handleResendOtp();
-                  }}
+                  onClick={handleResendOtp}
                 >
                   Gửi lại mã
                 </div>
-              ) : isPeding ? (
-                <span className="loading loading-spinner" />
               ) : (
-                <div className="text-sm text-gray2">
-                  Gửi lại mã sau {timeLeft}s
+                <div className="text-sm">
+                  Mã sẽ được gửi lại sau {timeLeft}s
                 </div>
               )}
             </div>

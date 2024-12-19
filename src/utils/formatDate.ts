@@ -7,3 +7,7 @@ export const formatDobFromServer = (date?: string) => {
   const [year, month, day] = date ? date.split("-") : ["", "", ""];
   return date ? `${day}/${month}/${year}` : "";
 };
+
+export const formatTime = (time: string) => {
+  return time.slice(0, 5);
+};

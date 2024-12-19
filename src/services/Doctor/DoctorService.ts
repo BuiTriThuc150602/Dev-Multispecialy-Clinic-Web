@@ -7,10 +7,15 @@ export const DoctorService = () => {
       apiCall: axiosInstance.get("doctor/specializations"),
     });
   };
+  const getDoctors = async () => {
+    return await useApiRequest({
+      apiCall: axiosInstance.get("doctor"),
+    });
+  };
   const getDoctorBySpecialization = async (specializationId: string) => {
     return await useApiRequest({
       apiCall: axiosInstance.get(`doctor/specialization/${specializationId}`),
     });
   };
-  return { getSpecializations, getDoctorBySpecialization };
+  return { getSpecializations, getDoctors, getDoctorBySpecialization };
 };

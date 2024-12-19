@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lexend:wght@100..900&display=swap');@import url("https://fonts.googleapis.com/css2?family=Playwrite+DE+Grund:wght@100..400&family=Playwrite+NO:wght@100..400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lexend:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+DE+Grund:wght@100..400&family=Playwrite+NO:wght@100..400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 @tailwind base;
 @tailwind components;
@@ -22,4 +23,65 @@ body {
 
 .ant-form-item-label {
   font-weight: 500;
+}
+
+.auth_wrapper {
+  .ant-radio-button-wrapper {
+    border-radius: 16px !important;
+    &::before {
+      display: none;
+    }
+  }
+  .sign-up-wrapper {
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+  .ant-otp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .ant-input {
+      padding: 20px 0px;
+      width: 64px;
+    }
+    .ant-input-outlined {
+      &:hover,
+      &:focus {
+        border-color: theme("colors.blue2");
+      }
+    }
+  }
+}
+.ant-menu-horizontal {
+  border-bottom: 0;
+  .ant-menu-submenu-selected {
+    &::after {
+      border-bottom-width: 0 !important;
+    }
+  }
+}
+.ant-menu {
+  border-inline-end: 0 !important;
+  .ant-menu-submenu-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent !important;
+    padding-inline-end: 0 !important;
+    outline: 0 !important;
+    .ant-menu-submenu-arrow {
+      display: none;
+    }
+  }
+  .ant-menu-item {
+    color: theme("colors.primary-500") !important;
+    border-bottom: 1px solid theme("colors.primary-500") !important;
+  }
+  .ant-menu-item-active {
+    &:hover {
+      background-color: theme("colors.primary-500") !important;
+      color: white !important;
+    }
+  }
 }

@@ -51,7 +51,7 @@ export const PrescriptionResult: React.FC<{
     <>
       {prescriptions.map((prescription) => (
         <div key={prescription.id} className="mt-4">
-          <div className="text-lg font-semibold mt-6 mb-2 flex justify-center border-t pt-4">
+          <div className="text-primary-600 bg-primary-100 py-2 text-lg font-semibold mt-6 mb-2 flex justify-center border-t pt-4">
             ĐƠN THUỐC
           </div>
           <Table<Medications>

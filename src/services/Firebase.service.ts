@@ -49,9 +49,10 @@ export class FirebaseService {
       if (!recaptchaVerifier) {
         throw new Error("RecaptchaVerifier chưa được xác thực");
       }
+
       const phone_formatted =
         phone[0] === "0" ? phone.replace("0", "+84") : phone;
-      return signInWithPhoneNumber(
+      return await signInWithPhoneNumber(
         this.auth,
         phone_formatted,
         recaptchaVerifier
@@ -61,6 +62,7 @@ export class FirebaseService {
         const errorCodes = Object.keys(FirebaseErrorCode) as Array<
           keyof typeof FirebaseErrorCode
         >;
+
         if (errorCodes.includes(error.code)) {
           throw new Error(
             FirebaseErrorCode[error.code as keyof typeof FirebaseErrorCode]
@@ -77,22 +79,25 @@ export class FirebaseService {
     confirmationResult: ConfirmationResult,
     otp: string
   ): Promise<UserCredential> {
-    try {
-      return confirmationResult.confirm(otp);
-    } catch (error: any) {
-      if (error.code) {
-        const errorCodes = Object.keys(FirebaseErrorCode) as Array<
-          keyof typeof FirebaseErrorCode
-        >;
-        if (errorCodes.includes(error.code)) {
-          throw new Error(
-            FirebaseErrorCode[error.code as keyof typeof FirebaseErrorCode]
-          );
+    return confirmationResult
+      .confirm(otp)
+      .then((result) => {
+        return result;
+      })
+      .catch((error) => {
+        if (error.code) {
+          const errorCodes = Object.keys(FirebaseErrorCode) as Array<
+            keyof typeof FirebaseErrorCode
+          >;
+          if (errorCodes.includes(error.code)) {
+            throw new Error(
+              FirebaseErrorCode[error.code as keyof typeof FirebaseErrorCode]
+            );
+          }
+        } else {
+          throw new Error(error.message ?? "Lỗi không xác định");
         }
-      } else {
         throw new Error(error.message ?? "Lỗi không xác định");
-      }
-      throw new Error(error.message ?? "Lỗi không xác định");
-    }
+      });
   }
 }

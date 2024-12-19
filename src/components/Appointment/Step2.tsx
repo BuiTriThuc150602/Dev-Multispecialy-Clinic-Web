@@ -65,12 +65,12 @@ export const Step2 = ({ form }: { form: any }) => {
     }));
   };
   const handleSubmit = async () => {
-    const response = await appointment(formValues);
-    if (response) {
-      clearFormValue();
-      setStep(1);
-      navigate("/");
-    }
+    // const response = await appointment(formValues);
+    // if (response) {
+    //   clearFormValue();
+    //   setStep(1);
+    //   navigate("/");
+    // }
   };
 
   const gridClasses =
@@ -135,8 +135,8 @@ export const Step2 = ({ form }: { form: any }) => {
               }));
             }}
           >
-            <Radio value={true}>Nữ</Radio>
-            <Radio value={false}>Nam</Radio>
+            <Radio value={true}>Nam</Radio>
+            <Radio value={false}>Nữ</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item

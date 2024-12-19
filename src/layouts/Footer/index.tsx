@@ -15,8 +15,8 @@ export const Footer = () => {
     </div>
   );
   return (
-    <div className="grid grid-cols-2 bg-gradient-to-r from-[#F0F9FF] to-sky-300">
-      <div className="col-start-2  flex flex-row-reverse justify-evenly">
+    <div className="flex flex-col items-center md:grid md:grid-cols-2 bg-gradient-to-r from-primary-200 to-primary-500 mt-10">
+      <div className="col-start-2 flex flex-col md:flex-row-reverse justify-center md:justify-evenly">
         <Contact
           title="Hotline"
           value="1900 1234"
@@ -24,12 +24,12 @@ export const Footer = () => {
         />
         <Contact
           title="Email"
-          value="dmc@gmail.com"
+          value="dmc@dmc.clinic.com"
           icon={<MdEmail className="text-blue1" />}
         />
         <Contact
           title="Địa chỉ"
-          value="12 Nguyễn Văn Bảo, Gò Vấp, TP.HCM"
+          value="12 Lê Đức Thọ, Gò Vấp, TP.HCM"
           icon={<MdLocationPin className="text-blue1" />}
         />
       </div>

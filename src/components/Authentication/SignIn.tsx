@@ -5,17 +5,15 @@ import { AuthenService } from "@/services/Authen/AuthenService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/context/AuthContext";
+import { isScreenAuthenValue } from "./stores";
+import { useSetRecoilState } from "recoil";
 
-export const SignIn = ({
-  setIsScreen,
-}: {
-  setIsScreen: (value: string) => void;
-}) => {
+export const SignIn: React.FC = () => {
   const { isLoading, typeLoading, signIn } = AuthenService();
   const [form] = Form.useForm();
   const { setAccessToken } = useAuthContext();
-
   const navigate = useNavigate();
+  const setIsScreenAuthen = useSetRecoilState(isScreenAuthenValue);
 
   const handleSignIn = async (values: any) => {
     values.username = values.username.toUpperCase();
@@ -74,12 +72,17 @@ export const SignIn = ({
           Chưa có tài khoản?
           <i
             className="text-blue2 cursor-pointer ml-1"
-            onClick={() => setIsScreen(screenKey.signUp)}
+            onClick={() => setIsScreenAuthen(screenKey.signUp)}
           >
             Đăng ký
           </i>
         </div>
-        <i className="text-blue2 cursor-pointer">Quên mật khẩu?</i>
+        <i
+          className="text-blue2 cursor-pointer"
+          onClick={() => setIsScreenAuthen(screenKey.forgotPassword)}
+        >
+          Quên mật khẩu?
+        </i>
       </div>
     </div>
   );

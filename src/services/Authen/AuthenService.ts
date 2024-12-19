@@ -1,6 +1,7 @@
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { axiosInstance } from "@/api/axiosInstance";
 import { useState } from "react";
+import { ForgotPassword } from "@/types/Authentication";
 
 export const AuthenService = () => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -48,6 +49,13 @@ export const AuthenService = () => {
     });
   };
 
+  const forgotPassword = async (data: ForgotPassword) => {
+    return await useApiRequest({
+      apiCall: axiosInstance.post("/auth/forgot-password-patient", data),
+      catchError: true,
+    });
+  };
+
   return {
     isLoading,
     typeLoading,
@@ -56,5 +64,6 @@ export const AuthenService = () => {
     checkExistUsername,
     checkPatiendId,
     getProfile,
+    forgotPassword,
   };
 };

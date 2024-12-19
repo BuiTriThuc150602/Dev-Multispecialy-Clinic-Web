@@ -2,7 +2,7 @@ import { DoctorService } from "@/services/Doctor/DoctorService";
 import { useState } from "react";
 
 export const useGetDoctorBySpecialization = () => {
-  const [doctor, setDoctor] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const { getDoctorBySpecialization } = DoctorService();
 
   const fetchDoctorBySpecialization = async (specialization: string) => {
@@ -15,9 +15,9 @@ export const useGetDoctorBySpecialization = () => {
           value: doctor.fullName,
         };
       });
-      setDoctor(data);
+      setDoctors(data);
     }
   };
 
-  return { doctor, setDoctor, fetchDoctorBySpecialization };
+  return { doctors, setDoctors, fetchDoctorBySpecialization };
 };

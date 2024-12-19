@@ -75,7 +75,7 @@ export const TestResult: React.FC<{ labRequests: LabTest[] }> = ({
 }) => {
   return (
     <>
-      <div className="text-lg font-semibold mt-2 flex justify-center">
+      <div className="text-primary-600 bg-primary-100 py-2 text-lg font-semibold mt-2 flex justify-center">
         KẾT QUẢ XÉT NGHIỆM
       </div>
 
@@ -111,7 +111,7 @@ export const TestResult: React.FC<{ labRequests: LabTest[] }> = ({
                   dataSource={lab.testResult.detail}
                   pagination={false}
                 />
-                <div className="mt-4 grid grid-cols-2 gap-4 px-4 ">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 px-4 ">
                   {lab.testResult.images.map((image, idx) => (
                     <img
                       key={idx}

@@ -2,11 +2,19 @@ import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import Banner from "@/assets/img/banner.png";
 import Banner2 from "@/assets/img/banner-2.png";
+import { useRecoilValue } from "recoil";
+import { userValue } from "@/stores/user";
+import toast from "react-hot-toast";
 
 export const Slide = () => {
   const navigate = useNavigate();
+  const user = useRecoilValue(userValue);
 
   const handleBooking = () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để đặt lịch hẹn");
+      return;
+    }
     navigate("/booking");
   };
 
@@ -15,7 +23,7 @@ export const Slide = () => {
   return (
     <div>
       <div className="relative">
-        <img src={Banner} alt="banner" className="object-contain w-full"/>
+        <img src={Banner} alt="banner" className="object-contain w-full" />
         <div className="absolute top-0 lg:top-20 left-28 flex flex-col py-12">
           <div className="flex flex-col space-y-3">
             <h1 className={h1Classes}>Hệ Thống</h1>
@@ -39,9 +47,9 @@ export const Slide = () => {
                   Đặt lịch hẹn
                 </span>
               </Button>
-              <Button className="md:px-16 md:py-6">
+              {/* <Button className="md:px-16 md:py-6">
                 <span className="font-bold text-base lg:text-xl">Tra cứu</span>
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
