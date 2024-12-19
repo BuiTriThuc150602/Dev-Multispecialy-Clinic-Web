@@ -17,13 +17,13 @@ import { AppointmentService } from "@/services/Appointment/AppointmentService";
 import { useNavigate } from "react-router-dom";
 
 export const Step2 = ({ form }: { form: any }) => {
-  const setStep = useSetRecoilState(stepState);
+  const _setStep = useSetRecoilState(stepState);
   const { citys, fetchAddressData, fetchDistrictData } = useAddress();
   const [districts, setDistricts] = useState([]);
   const [formValues, setFormValues] = useRecoilState(formValuesState);
-  const clearFormValue = useResetRecoilState(formValuesState);
-  const { isLoading, loadingType, appointment } = AppointmentService();
-  const navigate = useNavigate();
+  const _clearFormValue = useResetRecoilState(formValuesState);
+  const { isLoading, loadingType, _appointment } = AppointmentService();
+  const _navigate = useNavigate();
 
   useEffect(() => {
     fetchAddressData();

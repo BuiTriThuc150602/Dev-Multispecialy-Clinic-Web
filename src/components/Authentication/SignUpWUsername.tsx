@@ -12,7 +12,6 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { formValue, isScreenAuthenValue } from "./stores";
 import { screenKey } from "./stores/screenKey";
 import { AuthenService } from "@/services/Authen/AuthenService";
-import toast from "react-hot-toast";
 import { useAddress } from "@/hooks/useAddress";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
