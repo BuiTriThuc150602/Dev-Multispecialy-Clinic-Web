@@ -111,8 +111,8 @@ export const Step1 = () => {
 
     if (selectedDate.isSame(dayjs(), "day")) {
       formAntd.setFieldsValue({ time: undefined });
-      let currentHour = dayjs().hour() + 10 + 1;
-      const currentMinute = dayjs().minute() + 23;
+      let currentHour = dayjs().hour();
+      const currentMinute = dayjs().minute();
       if (currentMinute > 45) {
         currentHour++;
       }
